@@ -12,6 +12,7 @@ import {
   Content
 } from 'bloomer';
 import axios from 'axios';
+import {toggleWidget} from 'react-chat-widget';
 
 class ListingEntity extends Component {
   constructor(props) {
@@ -52,7 +53,7 @@ class ListingEntity extends Component {
     });
   }
   contact() {
-
+    this.props.contact(this.props.luid, this.props.title);
   }
   interested() {
     const params = new URLSearchParams();

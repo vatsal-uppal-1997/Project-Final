@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import {Widget, addResponseMessage, addUserMessage} from 'react-chat-widget';
+import {Widget, addResponseMessage, addUserMessage, toggleWidget} from 'react-chat-widget';
 import 'react-chat-widget/lib/styles.css';
 import openSocket from 'socket.io-client';
 
@@ -40,7 +40,25 @@ class Message extends Component {
             addResponseMessage(data);
         });
     }
- 
+    componentWillUnmount() {
+        this.soc.disconnect();
+    } 
+    componentDidUpdate() {
+        let message = this.props.message;
+        if (message.lusername !== undefined & message.ltitle !== undefined) {
+            let sendMessage = `Thanks for showing interest in the listing "${message.ltitle}". You can now chat with @${message.lusername} to discuss further.`;
+            let dataMessage = {
+                userFrom: "SYSTEM",
+                userTo: this.props.userInfo.username,
+                timestamp: Date.now(),
+                message: sendMessage
+            }
+            this.soc.emit("postAMessage", JSON.stringify(dataMessage));
+            //addResponseMessage(sendMessage);
+            toggleWidget();
+            this.props.unset();
+        }
+    }
     // onMount() {
     //     this.interval = setInterval(()=>{this.listenAndUpdate()}, 2500);
     //     console.log(this.interval);

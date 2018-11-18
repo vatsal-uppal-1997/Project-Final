@@ -19,11 +19,18 @@ import EditListing from './EditListing';
 class Middle extends Component {
   constructor(props) {
     super(props);
-    this.state = {modal : false, edit: false, defaultValues : {}};
+    this.state = {modal : false, edit: false, defaultValues : {}, input : ""};
     this.enableEdit = this.enableEdit.bind(this);
     this.disable = this.disable.bind(this);
     this.disableEdit = this.disableEdit.bind(this);
     this.enable = this.enable.bind(this);
+    this.search = this.search.bind(this);
+  }
+  search() {
+    if (this.state.input === "")
+      this.props.search(undefined);
+    else
+      this.props.search(this.state.input);
   }
   enableEdit(defaultValues) {
     this.state.defaultValues = defaultValues;
@@ -48,10 +55,10 @@ class Middle extends Component {
             <LevelItem>
               <Field hasAddons>
                 <Control>
-                  <Input type="text" placeholder="Search by Locality"/>
+                  <Input type="text" placeholder="Search by Locality" value={this.state.input || ""} onChange={event => {this.setState({input : event.target.value})}}/>
                 </Control>
                 <Control>
-                  <Button>Search</Button>
+                  <Button onClick={this.search}>Search</Button>
                 </Control>
               </Field>
             </LevelItem>
@@ -71,7 +78,7 @@ class Middle extends Component {
       <Section>
         <AddListing isActive={this.state.modal} disable={this.disable}/>
         {this.state.edit && <EditListing isActive={this.state.edit} disable={this.disableEdit} default={this.state.defaultValues}/>}
-        <Listings listings={this.props.listings} uid={this.props.uid} enableEdit={this.enableEdit} trigger={this.props.trigger}/>
+        <Listings listings={this.props.listings} uid={this.props.uid} enableEdit={this.enableEdit} trigger={this.props.trigger} contact={this.props.contact}/>
       </Section>
     </Container>);
   }

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.bson.Document;
 import user.UserBean;
+import user.UserDao;
 
 /**
  *
@@ -68,15 +69,24 @@ public class User extends HttpServlet {
                 pw.println(new Document().append("message", "Invalid Request").toJson());
                 return;
             }
-            UserBean ub = (UserBean) hs.getAttribute("user");
-            Document userInfo = new Document();
-            userInfo.append("id", ub.getId());
-            userInfo.append("username", ub.getUsername());
-            userInfo.append("email", ub.getEmail());
-            userInfo.append("mobile", ub.getMobile());
-            userInfo.append("locality", ub.getLocality());
-            pw.println(userInfo.toJson());
+            String luid = request.getParameter("luid");
+            System.out.println(luid);
+            if (luid == null) {
+                UserBean ub = (UserBean) hs.getAttribute("user");
+                Document userInfo = new Document();
+                userInfo.append("id", ub.getId());
+                userInfo.append("username", ub.getUsername());
+                userInfo.append("email", ub.getEmail());
+                userInfo.append("mobile", ub.getMobile());
+                userInfo.append("locality", ub.getLocality());
+                pw.println(userInfo.toJson());
+            } else {
+                UserDao ud = new UserDao();
+                UserBean getUser = ud.readUser("_id", luid);
+                pw.println(new Document().append("username", getUser.getUsername()).toJson());
+            }
         } catch (Exception e) {
+            System.out.println(e);
             pw.println(new Document().append("message", "Invalid Request").toJson());
         }
     }

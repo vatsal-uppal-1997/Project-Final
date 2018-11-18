@@ -95,6 +95,40 @@ public class ListingDao {
         System.out.println(json);
         return json;
     }
+    
+    public String readListingLocality(String getBy, String value, String locality) throws NoSuchElementException {
+        getBy = getBy.toLowerCase();
+        value = value.toLowerCase();
+        if (getBy.equals("id")) {
+            getBy = "_id";
+        }
+        if (!this.validFields.contains(getBy)) {
+            throw new IllegalArgumentException("Invalid Field Data !");
+        }
+        boolean found = false;
+        List<ListingBean> toConvert = new LinkedList<>();
+        System.out.println(getBy + " " + value);
+        for (Document i : this.coll.find(new Document().append(getBy, value).append("locality", locality))) {
+            ListingBean lb;
+            lb = new ListingBean();
+            lb.setId(i.getString("_id"));
+            lb.setUid(i.getString("uid"));
+            lb.setTitle(i.getString("title"));
+            lb.setLocality(i.getString("locality"));
+            lb.setDescription(i.getString("description"));
+            lb.setImagePath(i.getString("imagePath"));
+            lb.setActivity(i.getString("activity"));
+            toConvert.add(lb);
+            found = true;
+        }
+        if (!found) {
+            throw new NoSuchElementException();
+        }
+        Gson gs = new Gson();
+        String json = gs.toJson(toConvert);
+        System.out.println(json);
+        return json;
+    }
 
     public String getInterested(String uid) 
         throws NoSuchElementException {
@@ -106,6 +140,35 @@ public class ListingDao {
         }
         for (String i : listings) {
             for (Document j : this.coll.find(new Document().append("_id", i))) {
+                ListingBean lb;
+                lb = new ListingBean();
+                lb.setId(j.getString("_id"));
+                lb.setUid(j.getString("uid"));
+                lb.setTitle(j.getString("title"));
+                lb.setLocality(j.getString("locality"));
+                lb.setDescription(j.getString("description"));
+                lb.setImagePath(j.getString("imagePath"));
+                lb.setActivity(j.getString("activity"));
+                toConvert.add(lb);
+            }
+        }
+        Gson gs = new Gson();
+        String json = gs.toJson(toConvert);
+        return json;
+    }
+    
+        public String getInterestedLocality(String uid, String locality) 
+        throws NoSuchElementException {
+        UserDao ud = new UserDao();
+        List<String> listings = ud.getInterested(uid);
+        List<ListingBean> toConvert = new LinkedList<>();
+        if (listings.isEmpty()) {
+            throw new NoSuchElementException("The 'interested' List is empty");
+        }
+        for (String i : listings) {
+            for (Document j : this.coll.find(new Document().append("_id", i))) {
+                if (!j.getString("locality").equals(locality))
+                    continue;
                 ListingBean lb;
                 lb = new ListingBean();
                 lb.setId(j.getString("_id"));

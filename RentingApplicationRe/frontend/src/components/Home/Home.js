@@ -16,7 +16,10 @@ class Home extends Component {
       showMy: false,
       showInterested : false,
       currentFrame: [],
-      userInfo: {}
+      userInfo: {},
+      lusername : undefined,
+      ltitle : undefined,
+      searchLocality : undefined
     };
     this.getListings = this.getListings.bind(this);
     this.setFrame = this.setFrame.bind(this);
@@ -25,9 +28,21 @@ class Home extends Component {
     this.showMy = this.showMy.bind(this);
     this.showInterested = this.showInterested.bind(this);
     this.getUserInfo = this.getUserInfo.bind(this);
+    this.contact = this.contact.bind(this);
+    this.unset = this.unset.bind(this);
+    this.search = this.search.bind(this);
     this.getUserInfo();
     this.getListings();
     this.setFrame();
+  }
+  search(locality) {
+    let prom = new Promise((res, rej) => {
+      this.setState({"searchLocality" : locality});
+      res();
+    });
+    prom.then(() => {
+      this.getListings();
+    });
   }
   getUserInfo() {
     axios.get("User").then(res => {
@@ -86,6 +101,8 @@ class Home extends Component {
   getListings() {
     if (this.state.showInterested === true) {
       const params = new URLSearchParams();
+      if (this.state.searchLocality !== undefined)
+        params.append("locality", this.state.searchLocality);
       params.append("uid", this.props.uid);
       params.append("showInterested", "true");
       axios.get("Listing?"+params.toString()).then(res => {
@@ -102,7 +119,10 @@ class Home extends Component {
       });
     } else {
       if (this.state.showMy === false) {
-        axios.get("Listing").then(res => {
+        let query = "Listing";
+        if (this.state.searchLocality !== undefined)
+          query += "?locality="+this.state.searchLocality;
+        axios.get(query).then(res => {
           this.setState({
             listings: JSON.parse(res.data.listings)
           });
@@ -111,6 +131,8 @@ class Home extends Component {
       } else {
         const fd = new URLSearchParams();
         fd.append("showMy", "true");
+        if (this.state.searchLocality !== undefined)
+          fd.append("locality", this.state.searchLocality);
         axios.get("Listing?" + fd.toString()).then(res => {
           this.setState({
             listings: JSON.parse(res.data.listings)
@@ -120,16 +142,30 @@ class Home extends Component {
       }
     }
   }
+  contact(luid, title) {
+    const params = new URLSearchParams();
+    params.append("luid", luid);
+    axios.get("User?"+params.toString()).then(res => {
+      if (res.data.username !== undefined || res.data.username !== null) {
+        this.setState({lusername : res.data.username, ltitle : title});
+      }
+    });
+  }
+
+  unset() {
+    this.setState({lusername : undefined, ltitle : undefined});
+  }
+
   render() {
     return (<div>
       <Top logout={this.props.logout} showMy={this.showMy} showInterested={this.showInterested} username={this.state.userInfo.username}/>
       <Section>
-        <Middle listings={this.state.currentFrame} trigger={this.getListings} uid={this.props.uid}/>
+        <Middle listings={this.state.currentFrame} trigger={this.getListings} uid={this.props.uid} contact={this.contact} search={this.search}/>
       </Section>
       <Section>
         <Bottom next={this.nextFrame} prev={this.prevFrame}/>
       </Section>
-      <Message userInfo={this.state.userInfo}/>
+      <Message userInfo={this.state.userInfo} message={{lusername : this.state.lusername, ltitle : this.state.ltitle}} unset={this.unset}/>
     </div>);
   }
 }

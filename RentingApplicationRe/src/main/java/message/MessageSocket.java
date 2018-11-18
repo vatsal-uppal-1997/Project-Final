@@ -22,7 +22,7 @@ public class MessageSocket {
        Configuration conf = new Configuration();
        conf.setHostname("0.0.0.0");
        conf.setPort(5010);
-       conf.setOrigin("http://124.253.18.54:8080");
+       conf.setOrigin("http://192.168.100.96:8080");
        this.sis = new SocketIOServer(conf);
     }
     

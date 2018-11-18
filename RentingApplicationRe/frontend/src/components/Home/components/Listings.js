@@ -23,7 +23,7 @@ class Listings extends Component {
       return (<Columns isCentered="isCentered">
         {
           this.props.listings.slice(0, 3).map(listing => (<Column isSize="1/4">
-            <ListingEntity enableEdit={this.props.enableEdit} uid={this.props.uid} lid={listing.id} luid={listing.uid} title={listing.title} image={listing.imagePath} description={listing.description} locality={listing.locality} trigger={this.props.trigger} interested={listing.interested}/>
+            <ListingEntity enableEdit={this.props.enableEdit} uid={this.props.uid} lid={listing.id} luid={listing.uid} title={listing.title} image={listing.imagePath} description={listing.description} locality={listing.locality} trigger={this.props.trigger} interested={listing.interested} contact={this.props.contact}/>
           </Column>))
         }
       </Columns>);
@@ -31,14 +31,14 @@ class Listings extends Component {
       return (<><Columns isCentered="isCentered">
         {
           this.props.listings.slice(0, 3).map(listing => (<Column isSize="1/4">
-            <ListingEntity enableEdit={this.props.enableEdit} uid={this.props.uid} lid={listing.id} luid={listing.uid} title={listing.title} image={listing.imagePath} description={listing.description} locality={listing.locality} trigger={this.props.trigger} interested={listing.interested}/>
+            <ListingEntity enableEdit={this.props.enableEdit} uid={this.props.uid} lid={listing.id} luid={listing.uid} title={listing.title} image={listing.imagePath} description={listing.description} locality={listing.locality} trigger={this.props.trigger} interested={listing.interested} contact={this.props.contact}/>
           </Column>))
         }
       </Columns>
       <Columns isCentered="isCentered">
         {
           this.props.listings.slice(3).map(listing => (<Column isSize="1/4">
-            <ListingEntity enableEdit={this.props.enableEdit} uid={this.props.uid} lid={listing.id} luid={listing.uid} title={listing.title} image={listing.imagePath} description={listing.description} locality={listing.locality} trigger={this.props.trigger} interested={listing.interested}/>
+            <ListingEntity enableEdit={this.props.enableEdit} uid={this.props.uid} lid={listing.id} luid={listing.uid} title={listing.title} image={listing.imagePath} description={listing.description} locality={listing.locality} trigger={this.props.trigger} interested={listing.interested} contact={this.props.contact}/>
           </Column>))
         }
       </Columns></>);

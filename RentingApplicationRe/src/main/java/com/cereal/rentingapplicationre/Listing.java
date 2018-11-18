@@ -46,8 +46,6 @@ public class Listing extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    
-
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -74,7 +72,6 @@ public class Listing extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
@@ -85,13 +82,19 @@ public class Listing extends HttpServlet {
             ListingDao ld = new ListingDao();
             String showMy = request.getParameter("showMy");
             String showInterested = request.getParameter("showInterested");
+            String showByLocal = (String) request.getParameter("locality");
+            System.out.println(showByLocal);
             if (showMy != null && showInterested != null) {
                 pw.println(new Document().append("message", "Invalid Request").toJson());
                 return;
             }
             if (showMy != null) {
                 try {
-                    pw.println(new Document().append("listings", ld.readListing("uid", ub.getId())).toJson());
+                    if (showByLocal != null) {
+                        pw.println(new Document().append("listings", ld.readListingLocality("uid", ub.getId(), showByLocal)).toJson());
+                    } else {
+                        pw.println(new Document().append("listings", ld.readListing("uid", ub.getId())).toJson());
+                    }
                     return;
                 } catch (NoSuchElementException e) {
                     pw.println(new Document().append("listings", "[]").toJson());
@@ -100,7 +103,11 @@ public class Listing extends HttpServlet {
             }
             if (showInterested != null) {
                 try {
-                    pw.println(new Document().append("listings", ld.getInterested(request.getParameter("uid"))).toJson());
+                    if (showByLocal != null) {
+                        pw.println(new Document().append("listings", ld.getInterestedLocality(request.getParameter("uid"), showByLocal)).toJson());
+                    } else {
+                        pw.println(new Document().append("listings", ld.getInterested(request.getParameter("uid"))).toJson());
+                    }
                     return;
                 } catch (NoSuchElementException e) {
                     System.out.println(e);
@@ -108,7 +115,11 @@ public class Listing extends HttpServlet {
                     return;
                 }
             }
-            pw.println(new Document().append("listings", ld.readListing("locality", ub.getLocality())).toJson());
+            if (showByLocal != null) {
+                pw.println(new Document().append("listings", ld.readListing("locality", showByLocal)).toJson());
+            } else {
+                pw.println(new Document().append("listings", ld.readListing("locality", ub.getLocality())).toJson());
+            }
         } catch (NullPointerException e) {
             pw.println(new Document().append("message", "Invalid Request").toJson());
         } catch (NoSuchElementException e) {
@@ -148,7 +159,7 @@ public class Listing extends HttpServlet {
                     Part image = request.getPart("image");
                     if (image != null) {
                         String path = getImagePath(image, id, request.getContextPath());
-                        System.out.println("image path : "+path);
+                        System.out.println("image path : " + path);
                         ld.updateListing(id, "imagePath", path);
                     }
                     pw.println(new Document().append("message", "Listing Successfully Updated").toJson());
@@ -195,7 +206,6 @@ public class Listing extends HttpServlet {
         ImageIO.write(bimg, "png", out);
         return context + "/Images/" + id;
     }
-   
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -232,7 +242,7 @@ public class Listing extends HttpServlet {
         UserDao ud = new UserDao();
         PrintWriter pw = resp.getWriter();
         HttpSession hs = req.getSession();
-        if (!((UserBean)hs.getAttribute("user")).getId().equals(uid)){
+        if (!((UserBean) hs.getAttribute("user")).getId().equals(uid)) {
             pw.println(new Document().append("message", "Invalid Request").toJson());
             return;
         }

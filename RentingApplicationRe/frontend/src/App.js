@@ -5,6 +5,7 @@ import Landing from './components/Landing/Landing';
 import Home from './components/Home/Home';
 
 class App extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
