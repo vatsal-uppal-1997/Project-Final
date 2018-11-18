@@ -15,7 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import org.bson.Document;
-import user.UserBean;
 import user.UserDao;
 
 /**

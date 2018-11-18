@@ -132,21 +132,25 @@ public class Message extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("application/json");
-        String uid = request.getParameter("uid");
-        PrintWriter out = response.getWriter();
-        HttpSession hs = request.getSession(false);
-        if (!((UserBean) hs.getAttribute("user")).getId().equals(uid)) {
-            out.println(new Document().append("message", "Invalid Request").toJson());
-            return;
-        }
-        MessageExchange mx = new MessageExchange();
-        out.println(mx.getMessages(uid).toJson());
+    @Override    
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.getWriter().println("Initialised");
     }
 
+//    @Override
+//    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+//            throws ServletException, IOException {
+//        response.setContentType("application/json");
+//        String uid = request.getParameter("uid");
+//        PrintWriter out = response.getWriter();
+//        HttpSession hs = request.getSession(false);
+//        if (!((UserBean) hs.getAttribute("user")).getId().equals(uid)) {
+//            out.println(new Document().append("message", "Invalid Request").toJson());
+//            return;
+//        }
+//        MessageExchange mx = new MessageExchange();
+//        out.println(mx.getMessages(uid).toJson());
+//    }
     /**
      * Handles the HTTP <code>POST</code> method.
      *
@@ -155,34 +159,33 @@ public class Message extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("application/json");
-        HttpSession hs = request.getSession(false);
-        PrintWriter out = response.getWriter();
-        UserDao ud = new UserDao();
-        // to from messageSent messageReceived timestamp(ts)
-        UserBean userTo;
-        try {
-            userTo = ud.readUser("username", request.getParameter("username"));
-        } catch (NoSuchElementException e) {
-            out.println(new Document().append("message", "Username not found").toJson());
-            return;
-        }
-        UserBean userFrom = (UserBean) hs.getAttribute("user");
-        String message = request.getParameter("message");
-        String messageReceived = "@" + userFrom.getUsername() + " " + message;
-        String messageSent = "@" + userTo.getUsername() + " " + message;
-        String ts = request.getParameter("timestamp");
-        try {
-            MessageExchange mx = new MessageExchange();
-            mx.putMessage(userTo.getId(), userFrom.getId(), messageSent, messageReceived, ts);
-        } catch (Exception e) {
-            out.println(new Document().append("message", "some error occured").toJson());
-        }
-    }
-
+//    @Override
+//    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+//            throws ServletException, IOException {
+//        response.setContentType("application/json");
+//        HttpSession hs = request.getSession(false);
+//        PrintWriter out = response.getWriter();
+//        UserDao ud = new UserDao();
+//        // to from messageSent messageReceived timestamp(ts)
+//        UserBean userTo;
+//        try {
+//            userTo = ud.readUser("username", request.getParameter("username"));
+//        } catch (NoSuchElementException e) {
+//            out.println(new Document().append("message", "Username not found").toJson());
+//            return;
+//        }
+//        UserBean userFrom = (UserBean) hs.getAttribute("user");
+//        String message = request.getParameter("message");
+//        String messageReceived = "@" + userFrom.getUsername() + " " + message;
+//        String messageSent = "@" + userTo.getUsername() + " " + message;
+//        String ts = request.getParameter("timestamp");
+//        try {
+//            MessageExchange mx = new MessageExchange();
+//            mx.putMessage(userTo.getId(), userFrom.getId(), messageSent, messageReceived, ts);
+//        } catch (Exception e) {
+//            out.println(new Document().append("message", "some error occured").toJson());
+//        }
+//    }
     /**
      * Returns a short description of the servlet.
      *
@@ -191,6 +194,6 @@ public class Message extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    } // </editor-fold>
 
 }
