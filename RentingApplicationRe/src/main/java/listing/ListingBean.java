@@ -5,19 +5,46 @@
  */
 package listing;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
 /**
  *
  * @author root
  */
+@Entity
+@Table(name="listings", uniqueConstraints={@UniqueConstraint(columnNames={"id"})})
 public class ListingBean {
     
+    @Id
+    @Column(name="id", nullable=false,unique=true,length=40)
     private String id;
+    @Column(name="uid", nullable=false,length=40)
     private String uid;
+    @Column(name="title", nullable=false,length=200)
     private String title;
+    @Column(name="locality", nullable=false,length=80)
     private String locality;
+    @Column(name="description", nullable=false, columnDefinition="TEXT")
     private String description;
+    @Column(name="imagePath", nullable=false,length=200)
     private String imagePath;
+    @Column(name="activity", nullable=false,length=30)
     private String activity;
+
+    @Override
+    public boolean equals(Object obj) {
+        ListingBean cast = (ListingBean) obj;
+        return cast.getId().equals(this.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode(); 
+    }
 
     public String getActivity() {
         return activity;

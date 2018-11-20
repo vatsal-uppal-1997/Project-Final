@@ -202,7 +202,7 @@ public class Listing extends HttpServlet {
     private String getImagePath(Part image, String id, String context) throws IOException {
         InputStream is = image.getInputStream();
         BufferedImage bimg = ImageIO.read(is);
-        File out = new File("/home/vatsal/Linux Backups/November 12, 2018/Programming Stuff/Netbeans and Projects/NetBeansProjects/NetBeansProjects/Project/RentingApplicationRe/src/main/java/com/cereal/rentingapplicationre/src/main/webapp/Images/" + id);
+        File out = new File("/home/vatsal/Project-Final/RentingApplicationRe/src/main/webapp/Images/" + id);
         ImageIO.write(bimg, "png", out);
         return context + "/Images/" + id;
     }

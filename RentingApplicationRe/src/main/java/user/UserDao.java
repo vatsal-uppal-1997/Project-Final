@@ -69,7 +69,7 @@ public class UserDao {
         UserBean temp = new UserBean();
         Boolean found = false;
         getBy = getBy.toLowerCase();
-        value = value.toLowerCase();
+        //value = value.toLowerCase();
         for (Document i : coll.find(new Document().append(getBy, value))) {
             temp.setId(i.getString("_id"));
             temp.setUsername(i.getString("username"));
