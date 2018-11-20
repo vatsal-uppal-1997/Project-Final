@@ -10,6 +10,7 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
+import com.corundumstudio.socketio.listener.DisconnectListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -76,7 +77,10 @@ public class Message extends HttpServlet {
         this.sis.addEventListener("getUid", String.class, new DataListener<String>() {
             @Override
             public void onData(SocketIOClient client, String input, AckRequest ack) throws Exception {
-                mappings.put(Document.parse(input).getString("uid"), client.getSessionId().toString());
+                String uid = Document.parse(input).getString("uid");
+                if (uid == null)
+                    return;
+                mappings.put(uid, client.getSessionId().toString());
                 System.out.println(mappings.toString());
             }
         });
@@ -100,12 +104,21 @@ public class Message extends HttpServlet {
                     userFrom = ud.readUser("username", doc.getString("userFrom"));
                     String messageReceived = processReq(doc, userTo, userFrom);
                     System.out.println("Send message to " + mappings.get(userTo.getId()));
+                    if (mappings.get(userTo.getId()) == null)
+                        return;
                     sis.getClient(UUID.fromString(mappings.get(userTo.getId()))).sendEvent("gotAMessage", messageReceived);
                 } catch (Exception e) {
                     System.out.println(e);
                 }
             }
 
+        });
+        this.sis.addDisconnectListener(new DisconnectListener() {
+            @Override
+            public void onDisconnect(SocketIOClient sioc) {
+                boolean remove = mappings.values().remove(sioc.getSessionId().toString());
+            }
+            
         });
         sis.start();
     }
