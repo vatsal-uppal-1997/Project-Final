@@ -6,6 +6,7 @@
 package message;
 
 import com.corundumstudio.socketio.Configuration;
+import com.corundumstudio.socketio.SocketConfig;
 import com.corundumstudio.socketio.SocketIOServer;
 
 
@@ -22,7 +23,10 @@ public class MessageSocket {
        Configuration conf = new Configuration();
        conf.setHostname("0.0.0.0");
        conf.setPort(5010);
-       conf.setOrigin("http://192.168.100.96:8080");
+       conf.setOrigin("http://172.31.3.95:8080");
+       SocketConfig socketConfig = conf.getSocketConfig();
+       socketConfig.setReuseAddress(true);
+       conf.setSocketConfig(socketConfig);
        this.sis = new SocketIOServer(conf);
     }
     
