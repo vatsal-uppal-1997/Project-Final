@@ -110,7 +110,13 @@ public class ListingDao {
             throw new NoSuchElementException("The 'interested' List is empty");
         }
         for (String i : listings) {
-            toConvert.add((listing.ListingBean) this.session.get(ListingBean.class, i));
+            ListingBean temp = (listing.ListingBean) this.session.get(ListingBean.class, i);
+            if (temp == null) {
+                System.out.println("Listing with id = "+i+" does not exist");
+                ud.removeInterested(uid, i);
+            } else {
+                toConvert.add(temp);
+            }
         }
         Gson gs = new Gson();
         String json = gs.toJson(toConvert);
@@ -129,8 +135,12 @@ public class ListingDao {
         }
         for (String i : listings) {
             ListingBean temp = (listing.ListingBean) this.session.get(ListingBean.class, i);
-            if (temp.getLocality().equals(locality))
+            if (temp == null) {
+                System.out.println("Listing with id = "+i+" does not exist");
+                ud.removeInterested(uid, i);
+            } else if (temp.getLocality().equals(locality)){
                 toConvert.add(temp);
+            }
         }
         Gson gs = new Gson();
         String json = gs.toJson(toConvert);
